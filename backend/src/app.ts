@@ -8,6 +8,8 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import { globalErrorHandler } from './controllers/error.controller';
 import { AppError } from './utils/appError';
+import { productsRouter } from './routes/products.route';
+import { reviewsRouter } from './routes/reviews.route';
 
 const app = express();
 
@@ -32,7 +34,10 @@ app.use(helmet());
 // Parses incoming requests with JSON payloads
 app.use(express.json());
 
-app.use('/api/v1', swaggerUi.serve, swaggerUi.setup(specs));
+// 3) ROUTES
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use('/api/v1/products', productsRouter);
+app.use('/api/v1/reviews', reviewsRouter);
 
 // Do check for all request type
 app.all('/{*any}', (req, res, next) => {
