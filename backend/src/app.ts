@@ -1,14 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import config from './config/config';
+import { config } from './config/config';
+import { specs, swaggerUi } from './config/swagger';
+
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import { globalErrorHandler } from './controllers/error.controller';
+import { AppError } from './utils/appError';
 
 const app = express();
 
-app.get('/', (req, res) => {});
 app.use(cors());
 
 // Development logging
@@ -29,6 +31,13 @@ app.use(helmet());
 
 // Parses incoming requests with JSON payloads
 app.use(express.json());
+
+app.use('/api/v1', swaggerUi.serve, swaggerUi.setup(specs));
+
+// Do check for all request type
+app.all('/{*any}', (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
 
 app.use(globalErrorHandler);
 

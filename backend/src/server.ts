@@ -1,5 +1,5 @@
 import app from './app';
-import config from './config/config';
+import { config } from './config/config';
 
 // for any programming errors. We need to handle these errors since it is creates unobvious application state
 process.on('uncaughtException', (err) => {

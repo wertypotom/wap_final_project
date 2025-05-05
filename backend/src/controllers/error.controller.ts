@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { AppError } from '../utils/appError';
-import config from '../config/config';
+import { config } from '../config/config';
 
 const sendErrorDev = (err: AppError, req: Request, res: Response) => {
   // API error
