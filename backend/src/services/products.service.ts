@@ -1,4 +1,4 @@
-import prisma from './../db/client';
+import { prisma } from './../db/client';
 
 export const fetchProducts = async (page: number, category?: string) => {
   const take = 10;
@@ -20,5 +20,17 @@ export const searchProductsByName = async (q: string) => {
       name: { contains: q, mode: 'insensitive' },
     },
     orderBy: { dateAdded: 'desc' },
+  });
+};
+
+export const createProduct = async (data: any) => {
+  const { name, description, category, price } = data;
+  return prisma.product.create({
+    data: {
+      name,
+      description,
+      category,
+      price,
+    },
   });
 };
