@@ -28,10 +28,26 @@ export const addReview = async (productId: string, data: any) => {
 };
 
 export const editReview = async (productId: string, id: string, data: any) => {
-  return prisma.review.update({
+  const updated = await prisma.review.update({
     where: { id },
     data,
   });
+
+  // Recompute averageRating on non-spam reviews
+  const reviews = await prisma.review.findMany({
+    where: { productId, isSpam: false },
+  });
+  const avg =
+    reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : 0;
+
+  await prisma.product.update({
+    where: { id: productId },
+    data: { averageRating: avg },
+  });
+
+  return updated;
 };
 
 export const removeReview = async (productId: string, id: string) => {
