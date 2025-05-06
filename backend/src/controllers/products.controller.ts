@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import {
   createProduct,
+  fetchProductById,
   fetchProducts,
   searchProductsByName,
 } from '../services/products.service';
@@ -24,3 +25,10 @@ export const postProduct = catchAsync(async (req: Request, res: Response) => {
   const product = await createProduct(req.body);
   res.json(product).status(201);
 });
+
+export const getProductById = catchAsync(
+  async (req: Request, res: Response) => {
+    const product = await fetchProductById(req.params.id);
+    res.json(product);
+  },
+);

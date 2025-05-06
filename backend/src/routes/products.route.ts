@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  getProductById,
   getProducts,
   postProduct,
   searchProducts,
@@ -72,5 +73,22 @@ router.get('/search', searchProducts);
  *         description: Product created
  */
 router.post('/', postProduct);
+
+/**
+ * @swagger
+ * /products/{id}:
+ *   get:
+ *     summary: Get a product by its ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A single product object
+ */
+router.get('/:id', getProductById);
 
 export { router as productsRouter };

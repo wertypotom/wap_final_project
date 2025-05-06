@@ -34,3 +34,9 @@ export const createProduct = async (data: any) => {
     },
   });
 };
+
+export const fetchProductById = async (id: string) => {
+  return prisma.product.findUniqueOrThrow({
+    where: { id },
+  });
+};
