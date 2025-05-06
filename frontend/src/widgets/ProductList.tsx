@@ -50,9 +50,15 @@ export const ProductList: FC = () => {
       )}
 
       <Pagination className='mt-3'>
-        <Pagination.Prev onClick={() => setPage(Math.max(page - 1, 1))} />
+        <Pagination.Prev
+          onClick={() => setPage(Math.max(page - 1, 1))}
+          disabled={page === 1}
+        />
         <Pagination.Item active>{page}</Pagination.Item>
-        <Pagination.Next onClick={() => setPage(page + 1)} />
+        <Pagination.Next
+          onClick={() => setPage(page + 1)}
+          disabled={products.length < 10}
+        />
       </Pagination>
     </>
   )

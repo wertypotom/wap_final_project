@@ -3,6 +3,7 @@ import { Modal, Form } from 'react-bootstrap'
 import { Button } from '../ui'
 import type { IReview, IReviewInput } from '../types'
 import { addReview, updateReview } from '../services/reviewService'
+import { useToastStore } from '../stores/useToastStore'
 
 interface ReviewModalProps {
   show: boolean
@@ -17,9 +18,10 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   productId,
   review,
 }) => {
-  const [author, setAuthor] = useState<string>('')
-  const [rating, setRating] = useState<number>(5)
-  const [comment, setComment] = useState<string>('')
+  const [author, setAuthor] = useState('')
+  const [rating, setRating] = useState(5)
+  const [comment, setComment] = useState('')
+  const addToast = useToastStore((state) => state.addToast)
 
   useEffect(() => {
     if (review) {
@@ -34,20 +36,28 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   }, [review, show])
 
   const handleSubmit = async () => {
-    const payload: IReviewInput = { author, rating, comment }
+    const payload: IReviewInput = {
+      author: author.trim(),
+      rating,
+      comment: comment.trim(),
+    }
     try {
       if (review) {
         await updateReview(productId, review.id, payload)
+        addToast('Review updated', 'success')
       } else {
         await addReview(productId, payload)
+        addToast('Review added', 'success')
       }
       onHide()
     } catch (err) {
-      console.error('Failed to submit review:', err)
+      console.error(err)
+      addToast('Failed to submit review', 'danger')
     }
   }
 
-  const isSubmitDisabled = author.trim() === '' || comment.trim() === ''
+  const authorInvalid = author.trim() === ''
+  const commentInvalid = comment.trim() === ''
 
   return (
     <Modal show={show} onHide={onHide} centered>
@@ -55,7 +65,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
         <Modal.Title>{review ? 'Edit Review' : 'Add Review'}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
+        <Form noValidate>
           <Form.Group controlId='reviewAuthor' className='mb-3'>
             <Form.Label>Author</Form.Label>
             <Form.Control
@@ -63,7 +73,11 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
               placeholder='Your name'
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
+              isInvalid={authorInvalid}
             />
+            <Form.Control.Feedback type='invalid'>
+              Author is required.
+            </Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group controlId='reviewRating' className='mb-3'>
@@ -88,7 +102,11 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
               placeholder='Write your review...'
               value={comment}
               onChange={(e) => setComment(e.target.value)}
+              isInvalid={commentInvalid}
             />
+            <Form.Control.Feedback type='invalid'>
+              Comment cannot be empty.
+            </Form.Control.Feedback>
           </Form.Group>
         </Form>
       </Modal.Body>
@@ -99,7 +117,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
         <Button
           variant='primary'
           onClick={handleSubmit}
-          disabled={isSubmitDisabled}
+          disabled={authorInvalid || commentInvalid}
         >
           {review ? 'Update Review' : 'Submit Review'}
         </Button>
