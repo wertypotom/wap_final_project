@@ -5,6 +5,7 @@ import {
   postProduct,
   searchProducts,
 } from '../controllers/products.controller';
+import { validateProduct } from '../middlewares/validate.middleware';
 
 const router = Router();
 
@@ -71,8 +72,10 @@ router.get('/search', searchProducts);
  *     responses:
  *       201:
  *         description: Product created
+ *       400:
+ *         description: Invalid request payload
  */
-router.post('/', postProduct);
+router.post('/', validateProduct, postProduct);
 
 /**
  * @swagger
