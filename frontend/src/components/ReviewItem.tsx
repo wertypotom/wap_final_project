@@ -3,16 +3,18 @@ import ListGroup from 'react-bootstrap/ListGroup'
 import { Button } from '../ui'
 import type { IReview } from '../types'
 
-interface ReviewItemProps extends IReview {
+interface Props extends IReview {
   onEdit: () => void
+  onDelete: () => void
 }
 
-export const ReviewItem: React.FC<ReviewItemProps> = ({
+const ReviewItem: React.FC<Props> = ({
   author,
   rating,
   comment,
   sentiment,
   onEdit,
+  onDelete,
 }) => (
   <ListGroup.Item className='d-flex justify-content-between'>
     <div>
@@ -21,8 +23,15 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
       <em>{sentiment}</em>
       <p>{comment}</p>
     </div>
-    <Button variant='outline-primary' size='sm' onClick={onEdit}>
-      ✏️
-    </Button>
+    <div className='btn-group'>
+      <Button variant='outline-primary' size='sm' onClick={onEdit}>
+        ✏️
+      </Button>
+      <Button variant='outline-danger' size='sm' onClick={onDelete}>
+        🗑️
+      </Button>
+    </div>
   </ListGroup.Item>
 )
+
+export default ReviewItem

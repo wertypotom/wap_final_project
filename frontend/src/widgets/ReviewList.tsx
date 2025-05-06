@@ -1,25 +1,38 @@
 import React, { useState } from 'react'
 import ListGroup from 'react-bootstrap/ListGroup'
 import { Spinner, Button } from '../ui'
-import { ReviewItem } from '../components/ReviewItem'
+import ReviewItem from '../components/ReviewItem'
 import { ReviewModal } from './ReviewModal'
 import type { IReview } from '../types'
+import { deleteReview } from '../services/reviewService'
+import { useToastStore } from '../stores/useToastStore'
 
-interface ReviewListProps {
+interface Props {
   productId: string
   reviews: IReview[]
   loading: boolean
   refetch: () => void
 }
 
-export const ReviewList: React.FC<ReviewListProps> = ({
+export const ReviewList: React.FC<Props> = ({
   productId,
   reviews,
   loading,
   refetch,
 }) => {
   const [showModal, setShowModal] = useState(false)
-  const [editingReview, setEditingReview] = useState<IReview | null>(null)
+  const [editing, setEditing] = useState<IReview | null>(null)
+  const addToast = useToastStore((s) => s.addToast)
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteReview(productId, id)
+      addToast('Review deleted', 'success')
+      refetch()
+    } catch {
+      addToast('Failed to delete review', 'danger')
+    }
+  }
 
   return (
     <>
@@ -29,6 +42,8 @@ export const ReviewList: React.FC<ReviewListProps> = ({
 
       {loading ? (
         <Spinner />
+      ) : reviews.length === 0 ? (
+        <p className='text-center'>No reviews yet. Be the first!</p>
       ) : (
         <ListGroup>
           {reviews.map((r) => (
@@ -36,9 +51,10 @@ export const ReviewList: React.FC<ReviewListProps> = ({
               key={r.id}
               {...r}
               onEdit={() => {
-                setEditingReview(r)
+                setEditing(r)
                 setShowModal(true)
               }}
+              onDelete={() => handleDelete(r.id)}
             />
           ))}
         </ListGroup>
@@ -46,11 +62,11 @@ export const ReviewList: React.FC<ReviewListProps> = ({
 
       <ReviewModal
         show={showModal}
-        review={editingReview ?? undefined}
+        review={editing || undefined}
         productId={productId}
         onHide={() => {
           setShowModal(false)
-          setEditingReview(null)
+          setEditing(null)
           refetch()
         }}
       />

@@ -1,11 +1,17 @@
-import { useEffect, type FC } from 'react'
+import React, { useEffect } from 'react'
+import { useSearchParams } from 'react-router'
 import Form from 'react-bootstrap/Form'
 import Pagination from 'react-bootstrap/Pagination'
 import { Spinner } from '../ui'
 import { ProductCard } from '../components/ProductCard'
 import { useProductStore } from '../stores/useProductStore'
 
-export const ProductList: FC = () => {
+export const ProductList: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const paramPage = Number(searchParams.get('page')) || 1
+  const paramCategory = searchParams.get('category') || ''
+  const paramQ = searchParams.get('q') || ''
+
   const {
     products,
     loading,
@@ -18,7 +24,20 @@ export const ProductList: FC = () => {
     loadProducts,
   } = useProductStore()
 
+  // Initialize store from URL once
   useEffect(() => {
+    setPage(paramPage)
+    setCategory(paramCategory)
+    setQuery(paramQ)
+  }, [])
+
+  // Sync store → URL & reload
+  useEffect(() => {
+    setSearchParams({
+      ...(page > 1 ? { page: String(page) } : {}),
+      ...(category ? { category } : {}),
+      ...(query ? { q: query } : {}),
+    })
     loadProducts()
   }, [page, category, query])
 
@@ -30,9 +49,9 @@ export const ProductList: FC = () => {
           placeholder='Search...'
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          className='me-2'
         />
         <Form.Select
-          className='ms-2'
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
@@ -45,11 +64,13 @@ export const ProductList: FC = () => {
 
       {loading ? (
         <Spinner />
+      ) : products.length === 0 ? (
+        <p className='text-center'>No products found.</p>
       ) : (
         products.map((p) => <ProductCard key={p.id} {...p} />)
       )}
 
-      <Pagination className='mt-3'>
+      <Pagination className='mt-3 justify-content-center'>
         <Pagination.Prev
           onClick={() => setPage(Math.max(page - 1, 1))}
           disabled={page === 1}
