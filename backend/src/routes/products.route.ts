@@ -91,6 +91,8 @@ router.post('/', validateProduct, postProduct);
  *     responses:
  *       200:
  *         description: A single product object
+ *       404:
+ *         description: Product not found
  */
 router.get('/:id', getProductById);
 
