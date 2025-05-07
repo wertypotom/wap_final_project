@@ -1,7 +1,7 @@
 import { prisma } from './../db/client';
 
 export const fetchProducts = async (page: number, category?: string) => {
-  const take = 5;
+  const take = 10;
   const skip = (page - 1) * take;
 
   const where = category ? { category } : {};

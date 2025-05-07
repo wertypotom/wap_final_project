@@ -22,7 +22,7 @@ export const ProductModal: React.FC<Props> = ({ show, onHide }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
-  const [price, setPrice] = useState(''); // as string
+  const [price, setPrice] = useState('');
   const addToast = useToastStore((s) => s.addToast);
   const loadProducts = useProductStore((s) => s.loadProducts);
 

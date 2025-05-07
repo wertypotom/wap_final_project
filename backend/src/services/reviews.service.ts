@@ -33,7 +33,6 @@ export const editReview = async (productId: string, id: string, data: any) => {
     data,
   });
 
-  // Recompute averageRating on non-spam reviews
   const reviews = await prisma.review.findMany({
     where: { productId, isSpam: false },
   });

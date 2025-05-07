@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router';
 import Form from 'react-bootstrap/Form';
 import Pagination from 'react-bootstrap/Pagination';
@@ -13,10 +13,10 @@ export const ProductList: React.FC = React.memo(() => {
   const paramCategory = searchParams.get('category') || '';
   const paramQ = searchParams.get('q') || '';
 
-  const { products, loading, page, category, query, setPage, setCategory, setQuery, loadProducts } =
+  const { products, loading, page, category, setPage, setCategory, setQuery, loadProducts } =
     useProductStore();
+  const initialMount = useRef(true);
 
-  // Local state for raw input, debounced into store.query
   const [rawQuery, setRawQuery] = useState(paramQ);
   const debouncedQuery = useDebounce(rawQuery, 500);
 
@@ -24,31 +24,36 @@ export const ProductList: React.FC = React.memo(() => {
     setPage(paramPage);
     setCategory(paramCategory);
     setRawQuery(paramQ);
+    setQuery(paramQ);
+    loadProducts();
   }, []);
 
   useEffect(() => {
-    if (!query) {
-      setSearchParams({
-        ...(page > 1 ? { page: String(page) } : {}),
-        ...(category ? { category } : {}),
-      });
-      loadProducts();
-    }
-  }, [page, category, query]);
+    setPage(1);
+  }, [category, setPage]);
 
   useEffect(() => {
     setPage(1);
     setQuery(debouncedQuery);
-    setSearchParams(
-      debouncedQuery
-        ? { q: debouncedQuery }
-        : {
-            ...(page > 1 ? { page: String(page) } : {}),
-            ...(category ? { category } : {}),
-          }
-    );
+  }, [debouncedQuery, setPage, setQuery]);
+
+  useEffect(() => {
+    if (initialMount.current) {
+      initialMount.current = false;
+      return;
+    }
+
+    const params: Record<string, string> = {};
+    if (debouncedQuery) {
+      params.q = debouncedQuery;
+    } else {
+      if (page > 1) params.page = String(page);
+      if (category) params.category = category;
+    }
+
+    setSearchParams(params);
     loadProducts();
-  }, [debouncedQuery]);
+  }, [page, category, debouncedQuery]);
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setRawQuery(e.target.value);
@@ -93,7 +98,7 @@ export const ProductList: React.FC = React.memo(() => {
       <Pagination className="mt-3 justify-content-center">
         <Pagination.Prev onClick={prevPage} disabled={page === 1} />
         <Pagination.Item active>{page}</Pagination.Item>
-        <Pagination.Next onClick={nextPage} disabled={products.length < 5} />
+        <Pagination.Next onClick={nextPage} disabled={products.length < 10} />
       </Pagination>
     </>
   );
