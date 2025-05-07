@@ -4,7 +4,6 @@ import morgan from 'morgan';
 import { config } from './config/config';
 import { specs, swaggerUi } from './config/swagger';
 
-import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import { globalErrorHandler } from './controllers/error.controller';
 import { AppError } from './utils/appError';
@@ -19,14 +18,6 @@ app.use(cors());
 if (config.nodeEnv === 'development') {
   app.use(morgan('dev'));
 }
-
-// Limit requests from same API
-const limiter = rateLimit({
-  max: 100,
-  windowMs: 60 * 60 * 1000,
-  message: 'Too many requests from this IP, please try again in an hour!',
-});
-app.use('/api', limiter);
 
 // Set security HTTP headers
 app.use(helmet());

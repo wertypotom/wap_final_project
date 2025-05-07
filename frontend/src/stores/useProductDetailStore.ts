@@ -1,15 +1,15 @@
-import create from 'zustand'
-import { type IProduct, type IReview } from '../types'
-import { fetchProductById } from '../services/productService'
-import { fetchReviews } from '../services/reviewService'
+import { create } from 'zustand';
+import { type IProduct, type IReview } from '../types';
+import { fetchProductById } from '../services/productService';
+import { fetchReviews } from '../services/reviewService';
 
 interface ProductDetailState {
-  product: IProduct | null
-  reviews: IReview[]
-  loadingProduct: boolean
-  loadingReviews: boolean
-  loadProduct: (id: string) => Promise<void>
-  loadReviews: (id: string) => Promise<void>
+  product: IProduct | null;
+  reviews: IReview[];
+  loadingProduct: boolean;
+  loadingReviews: boolean;
+  loadProduct: (id: string) => Promise<void>;
+  loadReviews: (id: string) => Promise<void>;
 }
 
 export const useProductDetailStore = create<ProductDetailState>((set) => ({
@@ -18,21 +18,21 @@ export const useProductDetailStore = create<ProductDetailState>((set) => ({
   loadingProduct: false,
   loadingReviews: false,
   loadProduct: async (id) => {
-    set({ loadingProduct: true })
+    set({ loadingProduct: true });
     try {
-      const product = await fetchProductById(id)
-      set({ product })
+      const product = await fetchProductById(id);
+      set({ product });
     } finally {
-      set({ loadingProduct: false })
+      set({ loadingProduct: false });
     }
   },
   loadReviews: async (id) => {
-    set({ loadingReviews: true })
+    set({ loadingReviews: true });
     try {
-      const reviews = await fetchReviews(id)
-      set({ reviews })
+      const reviews = await fetchReviews(id);
+      set({ reviews });
     } finally {
-      set({ loadingReviews: false })
+      set({ loadingReviews: false });
     }
   },
-}))
+}));
