@@ -37,7 +37,7 @@ app.use(express.json());
 // 3) ROUTES
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/api/v1/products', productsRouter);
-app.use('/api/v1/reviews', reviewsRouter);
+app.use('/api/v1/products', reviewsRouter);
 
 // Do check for all request type
 app.all('/{*any}', (req, res, next) => {

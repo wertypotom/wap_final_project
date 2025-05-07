@@ -15,6 +15,7 @@ export const getProductReviews = catchAsync(
 );
 
 export const createReview = catchAsync(async (req: Request, res: Response) => {
+  console.log('Hitting createReview');
   const review = await addReview(req.params.id, req.body);
   res.status(201).json(review);
 });

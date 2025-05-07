@@ -5,7 +5,6 @@ import {
   updateReview,
   deleteReview,
 } from '../controllers/reviews.controller';
-import { aiModeration } from '../middlewares/ai.middleware';
 import { validateReview } from '../middlewares/validate.middleware';
 
 const router = Router();
@@ -60,7 +59,7 @@ router.get('/:id/reviews', getProductReviews);
  *       400:
  *         description: Invalid review payload
  */
-router.post('/:id/reviews', validateReview, aiModeration, createReview);
+router.post('/:id/reviews', validateReview, createReview);
 
 /**
  * @swagger
