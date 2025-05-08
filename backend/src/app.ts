@@ -12,8 +12,6 @@ import { reviewsRouter } from './routes/reviews.route';
 
 const app = express();
 
-app.use(cors());
-
 // Development logging
 if (config.nodeEnv === 'development') {
   app.use(morgan('dev'));
@@ -31,7 +29,7 @@ app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/products', reviewsRouter);
 
 // Do check for all request type
-app.all('/{*any}', (req, res, next) => {
+app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
