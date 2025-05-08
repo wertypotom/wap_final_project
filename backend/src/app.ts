@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import morgan from 'morgan';
 import { config } from './config/config';
 import { specs, swaggerUi } from './config/swagger';
@@ -10,6 +11,14 @@ import { productsRouter } from './routes/products.route';
 import { reviewsRouter } from './routes/reviews.route';
 
 const app = express();
+
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }),
+);
 
 // Development logging
 if (config.nodeEnv === 'development') {
