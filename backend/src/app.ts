@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import morgan from 'morgan';
 import { config } from './config/config';
 import { specs, swaggerUi } from './config/swagger';
@@ -29,7 +28,7 @@ app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/products', reviewsRouter);
 
 // Do check for all request type
-app.all('*', (req, res, next) => {
+app.all('/{*any}', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
